@@ -1,0 +1,8 @@
+version: '2'
+services:
+  user-frontend:
+   build:
+    context: .
+    dockerfile: Dockerfile
+  # Insert your startup command here (has to run indefinitely)
+  command: bash

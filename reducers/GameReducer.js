@@ -26,3 +26,11 @@ export function gameReducer(state = INITIAL_STATE, action){
       return state
   }
 };
+
+/*
+items: [
+  ...state.service_info.service.list_copy_id.items.slice(0, index),
+  action.activity,
+  ...state.service_info.service.list_copy_id.items.slice(index + 1)
+]
+*/

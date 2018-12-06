@@ -36,12 +36,13 @@ class DraggableLabel extends React.Component {
           null, { dx: this.state.pan.x, dy: this.state.pan.y }
         ]),
         onPanResponderRelease: (e, gesture) => {
-          //moveX, moveY = the latest screen coordinates of the recently-moved touch
-          alert(gesture.moveX+','+gesture.moveY);
+          //moveX, moveY is the latest screen coordinates of the recently-moved touch
+          this.props.onDrop(gesture.moveX, gesture.moveY, this.props.id);
           this.setState({
             isBeingDragged: false
           })
           if (this.isDropArea(gesture)) {
+            /*
             Animated.timing(this.state.opacity, {
               toValue: 0,
               duration: 1000
@@ -50,6 +51,7 @@ class DraggableLabel extends React.Component {
                 showDraggable: false
               })
             );
+            */
           } else {
             Animated.spring(this.state.pan, {
               toValue: { x: 0, y: 0 },
@@ -67,7 +69,7 @@ class DraggableLabel extends React.Component {
   }
 
   isDropArea(gesture) {
-    return gesture.moveY < 200;
+    return gesture.moveY < 400;
   }
 
   render() {
@@ -113,11 +115,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = (state) => {
-  return state;
-};
-
-const mapDispatchToProps = dispatch => ({
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(DraggableLabel);
+export default DraggableLabel;

@@ -2,47 +2,76 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getNewGame } from './reducers/GameActions';
+import { getNewGame, getNewGameMock, placeLabel, completedImage } from './reducers/GameActions';
 import DraggableLabel from './DraggableLabel';
 
 class Game extends React.Component {
 
-  /*TODO: replace state with props using mapStateToProps*/
-  state = {
-    labels: [
-       {'name': 'BMW', 'id': 1},
-       {'name': 'SAAB', 'id': 2},
-       {'name': '240 snus it', 'id': 3}
-    ]
+  constructor(props){
+    super(props);
+    this.handleNextImage = this.handleNextImage.bind(this);
+    this.handleSkipImage = this.handleSkipImage.bind(this);
+  }
+
+  componentWillMount(){
+    this.props.getNewGameMock();
   }
 
   imagePress = (e) =>{
     alert(e.nativeEvent.locationX);
   }
 
+  handleLabelDrop(x, y, id){
+    console.log("drop");
+    console.log(x, y, id);
+    this.props.placeLabel(x, y, id);
+  }
+
+  handleNextImage(){
+    console.log("handle next");
+    this.props.completedImage(this.props.user.id, this.props.game.image.id, this.props.game.placed_labels);
+    this.props.getNewGameMock();
+  }
+
+  handleSkipImage(){
+    console.log("skipping image");
+  }
+
   render() {
-    return (
+    if(this.props.game.image.id == 0){
+      return(<Text>No image</Text>);
+    }
+    return(
       <View style={styles.container}>
-          <View style={styles.mainContainer}>
-            <View style={styles.dropZone}>
-              <Text style={styles.text}>Drop them here!</Text>
-              {/*TODO: replace image with props.game.image*/}
-              <Image source={require('./res/240.jpg')} style={{maxWidth: '100%',flex: 1}}/>
-            </View>
-            <View style={styles.ballContainer} />
-              <View style={styles.row}>
-                 {
-                    //Todo: this.props.game.labels
-                    this.state.labels.map((item, index) => (
-                       <DraggableLabel
-                       key = {item.id} 
-                       text = {item.name}/>
-                    ))
-                 }
-                
-              </View>
+        <View style={styles.mainContainer}>
+          <View style={styles.dropZone}>
+            <Image source={{uri:this.props.game.image.imageSrc}} style={{maxWidth: '100%',flex: 1}}/>
+          </View>
+          <View style={styles.ballContainer}>
+            <View style={styles.row}>
+               {
+                  this.props.game.labels != undefined ? this.props.game.labels.map((item, index) => (
+                     <DraggableLabel
+                     key = {item.id}
+                     onDrop = {this.handleLabelDrop.bind(this)}
+                     id = {item.id}
+                     text = {item.name}/>
+                  )) : <Text>NEXT</Text>
+               }
             </View>
           </View>
+          <View style={styles.buttonContainer}>
+            <Button 
+              title="Next image"
+              onPress={() => this.handleNextImage()}
+            />
+            <Button 
+              title="Skip image"
+              onPress={() => this.handleSkipImage()}
+            />
+          </View>
+        </View>
+      </View>
     );
   }
 }
@@ -56,6 +85,9 @@ const styles = StyleSheet.create({
   },
   ballContainer: {
     height:100
+  },
+  buttonContainer:{
+    height: 100
   },
   dropZone: {
     height: 400,
@@ -86,11 +118,15 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  game: state.game
+  game: state.game,
+  user: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
-  getNewGame: getNewGame(dispatch)
+  placeLabel: placeLabel(dispatch),
+  getNewGame: getNewGame(dispatch),
+  getNewGameMock: getNewGameMock(dispatch),
+  completedImage: completedImage(dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

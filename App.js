@@ -8,11 +8,12 @@ import axiosMiddleware from 'redux-axios-middleware';
 
 //TODO: replace with actual URL
 const client = axios.create({
-  baseURL: 'https://www.labelquest.com/api',
+  baseURL: 'localhost:8000',
   responseType: 'json'
 });
 
-const store = createStore(RootReducer, applyMiddleware(axiosMiddleware(client)));
+const store = createStore(RootReducer);
+// applyMiddleware(axiosMiddleware(client))
 
 export default class App extends React.Component {
   render() {

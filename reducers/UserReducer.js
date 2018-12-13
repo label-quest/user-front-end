@@ -1,7 +1,7 @@
 import { GET_USER } from './types';
 
 const INITIAL_STATE = {
-  user_info:{id:0}
+  user_info: {id:1337}
 };
 
 export function userReducer(state = INITIAL_STATE, action){

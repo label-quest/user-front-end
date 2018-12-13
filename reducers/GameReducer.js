@@ -1,8 +1,14 @@
-import { NEW_GAME, LABEL_PLACED } from './types';
+import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX } from './types';
 
 const INITIAL_STATE = {
-  image:{id:0, imageSrc:''},
-  labels:[],
+  current_box: 0,
+  boxes:[{
+    image:{id:1, imageSrc:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg'},
+    labels:[]
+  },{
+    image:{id:2, imageSrc:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg'},
+    labels:[]
+  }],
   placed_labels: []
 };
 
@@ -11,26 +17,26 @@ export function gameReducer(state = INITIAL_STATE, action){
     case NEW_GAME:
     	return{
     		...state,
-    		labels: action.payload.labels,
-        image: action.payload.image,
-        placed_labels: [],
+        boxes:{
+          ...state.boxes,
+          [action.storage_box]: Object.assign({}, {labels: action.payload.labels, image: action.payload.image}),
+          placed_labels: []
+        }
     	}
+    case SET_STORAGE_BOX:
+      return{
+        ...state,
+        current_box:action.storage_box
+      }
     case LABEL_PLACED:
       return{
         ...state,
-        placed_labels: [
-          ...state.placed_labels,{ [action.label_id]:{x:action.x, y:action.y} }
-          ]
+        placed_labels:{
+          ...state.placed_labels,
+          [action.payload.label_id]: Object.assign({}, {x:action.payload.x, y:action.payload.y})
         }
+      }
     default:
       return state
   }
 };
-
-/*
-items: [
-  ...state.service_info.service.list_copy_id.items.slice(0, index),
-  action.activity,
-  ...state.service_info.service.list_copy_id.items.slice(index + 1)
-]
-*/

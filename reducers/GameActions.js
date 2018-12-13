@@ -1,4 +1,4 @@
-import { NEW_GAME, LABEL_PLACED } from './types';
+import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX } from './types';
 import axios from 'axios';
 
 imageSrc = 'http://existenz.se/img/duck50x50.png';
@@ -16,7 +16,13 @@ mockGame = {
 
 export function getNewGameMock(dispatch){
 	return function(storage_box){
-		dispatch({ type: NEW_GAME, payload: mockGame });
+		dispatch({ type: NEW_GAME, storage_box:storage_box, payload: mockGame });
+	}
+}
+
+export function setStorageBox(dispatch){
+	return function(storage_box){
+		dispatch({ type: SET_STORAGE_BOX, storage_box:storage_box });
 	}
 }
 
@@ -29,18 +35,48 @@ export function placeLabel(dispatch){
 export function completedImage(dispatch){
 	return function(user_id, image_id, labels){
 		console.log("completedImage");
+		console.log(user_id);
+		console.log(image_id);
+		console.log(labels);
+		/*
+		axios.post('/label_placement', 
+		{
+			user_id:user_id,
+			image_id:image_id,
+			labels:[labels]
+		}).then(response => {
+			console.log(response);
+		}).catch(error => {
+			console.log(error);
+		});
+		*/
 	}
 }
 
-export const getNewGame = () => (
-	{}
-	/*
-	axios.get('/new_game')
-		.then(response => {
-			if(response.status === 200) dispatch({ type: NEW_GAME, payload: response.data, });
-		}).catch(function (error) {
+export function getNewGame(dispatch){
+	return function(storage_box){
+		console.log("Getting new game");
+		axois({
+			method:'get',
+			url:'http://localhost:8000/training_sample/'
+		}).then(function(response){
+			console.log(response);
+			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, payload: response.data });
+		}).catch(function(error){
 			console.log("Error getting new game");
 			console.log(error);
+			dispatch({ type: NEW_GAME, storage_box:storage_box, payload: mockGame });
 		})
-		*/
-);
+		/*
+		axios.get('http://localhost:8000/training_sample/')
+			.then(response => {
+				console.log(response);
+				if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, payload: response.data });
+			}).catch(error => {
+				console.log("Error getting new game");
+				console.log(error);
+				dispatch({ type: NEW_GAME, storage_box:storage_box, payload: mockGame });
+			})
+			*/
+	}
+};

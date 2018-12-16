@@ -56,7 +56,7 @@ export function completedImage(dispatch){
 export function getNewGame(dispatch){
 	return function(storage_box){
 		console.log("Getting new game");
-		axois({
+		axios({
 			method:'get',
 			url:'http://localhost:8000/training_sample/'
 		}).then(function(response){

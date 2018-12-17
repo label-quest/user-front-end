@@ -1,17 +1,25 @@
-import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX } from './types';
+import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX, SET_RESET_LABEL } from './types';
 
 const INITIAL_STATE = {
   current_box: 0,
   boxes:[{
     image_id:1, 
     img_path:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg',
-    labels:[]
+    labels:[
+      {'name': 'BMW', 'id': 1},
+      {'name': 'SAAB', 'id': 2},
+      {'name': '240 snus it', 'id': 3}]
   },{
     image_id:2, 
     img_path:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg',
-    labels:[]
+    labels:[
+      {'name': 'BMW2', 'id': 7},
+      {'name': 'SAAB2', 'id': 8},
+      {'name': '240 snus 222it', 'id': 11}    
+    ]
   }],
-  placed_labels: []
+  placed_labels: [],
+  reset_labels: false
 };
 
 function shuffle(a) {
@@ -23,9 +31,10 @@ function shuffle(a) {
 
 export function gameReducer(state = INITIAL_STATE, action){
   switch (action.type) { 
-    case 'CLEAR_LABELS':
+    case SET_RESET_LABEL:
       return{
-
+        ...state,
+        reset_labels: action.reset
       }   
     case NEW_GAME:
       var labels = action.labels;
@@ -44,12 +53,11 @@ export function gameReducer(state = INITIAL_STATE, action){
         current_box:action.storage_box,
         boxes:{
           ...state.boxes,
-          [(action.storage_box+1)%2]: Object.assign({}, INITIAL_STATE.boxes[action.storage_box]),
-          placed_labels: []
-        }
+          [(action.storage_box+1)%2]: INITIAL_STATE.boxes[action.storage_box],
+        },
+        placed_labels: []
       }
     case LABEL_PLACED:
-      console.log(state);
       var index = state.placed_labels.findIndex(x => x.id==action.payload.label_id);
       var label = {id:action.payload.label_id, x:action.payload.x, y:action.payload.y}
 

@@ -1,4 +1,4 @@
-import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX } from './types';
+import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX, SET_RESET_LABEL } from './types';
 import axios from 'axios';
 
 img_path = 'http://existenz.se/img/duck50x50.png';
@@ -26,6 +26,14 @@ export function changeStorageBox(dispatch){
 	}
 }
 
+export function setResetLabels(dispatch){
+	return function(reset){
+		console.log("RESETTING LABEL ACTION");
+
+		dispatch({ type: SET_RESET_LABEL, reset:reset });
+	}
+}
+
 export function placeLabel(dispatch){
 	return function(x, y, label_id){
 		dispatch( {type: LABEL_PLACED, payload:{x:x, y:y, label_id:label_id}} );
@@ -34,16 +42,11 @@ export function placeLabel(dispatch){
 
 export function completedImage(dispatch){
 	return function(user_id, image_id, labels){
-		console.log("completedImage");
-
 		var obj = {
 			user_id:user_id,
 			image_id:image_id,
 			placed_labels:labels
 		}
-
-		console.log(obj);
-		
 		axios.post('http://131.159.209.197:8000/label_placement/', obj).then(response => {
 			console.log(response.data);
 		}).catch(error => {

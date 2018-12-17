@@ -2,24 +2,27 @@ import React from "react";
 import { StyleSheet, View, Text, PanResponder, Animated } from "react-native";
 import { connect } from 'react-redux';
 
+import { setResetLabels } from './reducers/GameActions';
+
 class DraggableLabel extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       isBeingDragged: false,
       showDraggable: true,
       dropAreaValues: null,
+      initals: null,
       pan: new Animated.ValueXY(),
       opacity: new Animated.Value(1)
     };
+    this.resetLabel = this.resetLabel.bind(this);
   }
 
   componentWillMount() {
-    this._val = { x:0, y:0 }
+    this._val = { x:0, y:0 };
+    this.setState({ initals: this._val });
     this.state.pan.addListener((value) => this._val = value);
-
     this.panResponder = PanResponder.create({
         onStartShouldSetPanResponder: (e, gesture) => true,
         onPanResponderGrant: (e, gesture) => {
@@ -27,7 +30,7 @@ class DraggableLabel extends React.Component {
             isBeingDragged: true
           })
           this.state.pan.setOffset({
-            x: this._val.x,
+            x:this._val.x,
             y:this._val.y
           })
           this.state.pan.setValue({ x:0, y:0 })
@@ -62,10 +65,29 @@ class DraggableLabel extends React.Component {
       });
   }
 
+  componentDidUpdate(){
+    console.log("UPDATE");
+    console.log(this.props.reset_labels);
+    if(this.props.reset_labels){
+      console.log("Restting lavel");
+      this.resetLabel();
+    }
+  }
+
   getLabelStyle(){
     return(
       {...styles.label, ...(this.state.isBeingDragged ? styles.pressed : {})}
     );
+  }
+
+  resetLabel(){
+    console.log("resetLabel");
+    this.state.pan.setOffset({ x: this.state.initals.x, y: this.state.initals.y});
+    Animated.spring(this.state.pan, {
+      toValue: { x: this.state.initals.x, y: this.state.initals.y },
+      friction: 5
+    }).start();
+    this.props.setResetLabels(false);
   }
 
   isDropArea(gesture) {
@@ -115,4 +137,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DraggableLabel;
+const mapStateToProps = state => ({
+  placed_labels: state.game.placed_labels,
+  reset_labels: state.game.reset_labels
+});
+
+const mapDispatchToProps = dispatch => ({
+  setResetLabels: setResetLabels(dispatch)
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DraggableLabel);

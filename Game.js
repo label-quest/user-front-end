@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getNewGame, getNewGameMock, placeLabel, completedImage, changeStorageBox } from './reducers/GameActions';
+import { getNewGame, getNewGameMock, placeLabel, completedImage, changeStorageBox, setResetLabels } from './reducers/GameActions';
 import DraggableLabel from './DraggableLabel';
 
 class Game extends React.Component {
@@ -14,7 +14,6 @@ class Game extends React.Component {
   }
 
   componentWillMount(){
-
     this.props.getNewGame(this.props.current_box);
     this.props.getNewGame((this.props.current_box+1)%2);
   }
@@ -35,14 +34,27 @@ class Game extends React.Component {
     //var other_box = (this.props.current_box+1)%2;
     this.props.changeStorageBox((this.props.current_box+1)%2);
     this.props.getNewGame(this.props.current_box);
+    this.props.setResetLabels(true);
   }
 
   handleSkipImage(){
     console.log("skipping image");
   }
 
+  makeDraggables(labels){
+      return(
+        labels != undefined ? labels.map((item, index) => (
+           <DraggableLabel
+           key = {index}
+           onDrop = {this.handleLabelDrop.bind(this)}
+           id = {item.id}
+           name = {item.name}/>
+        )) : <Text>NEXT</Text>
+      )
+  }
+
   render() {
-    const game = this.props.boxes[this.props.current_box];
+    var game = this.props.boxes[this.props.current_box];
     var box = this.props.current_box;
     if(game.img_path == undefined){
       return(<View style={styles.container}>
@@ -53,21 +65,12 @@ class Game extends React.Component {
     return(
       <View style={styles.container}>
         <View style={styles.mainContainer}>
-          <Text>Current box: {box}</Text>
           <View style={styles.dropZone}>
             <Image source={{uri:game.img_path}} style={{maxWidth: '100%',flex: 1}}/>
           </View>
           <View style={styles.ballContainer}>
             <View style={styles.row}>
-               {
-                  game.labels != undefined ? game.labels.map((item, index) => (
-                     <DraggableLabel
-                     key = {item.id}
-                     onDrop = {this.handleLabelDrop.bind(this)}
-                     id = {item.id}
-                     name = {item.name}/>
-                  )) : <Text>NEXT</Text>
-               }
+                {this.makeDraggables(game.labels)}
             </View>
           </View>
           <View style={styles.buttonContainer}>
@@ -139,7 +142,8 @@ const mapDispatchToProps = dispatch => ({
   getNewGame: getNewGame(dispatch),
   getNewGameMock: getNewGameMock(dispatch),
   completedImage: completedImage(dispatch),
-  changeStorageBox: changeStorageBox(dispatch)
+  changeStorageBox: changeStorageBox(dispatch),
+  setResetLabels: setResetLabels(dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

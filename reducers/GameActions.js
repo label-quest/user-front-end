@@ -1,7 +1,7 @@
 import { NEW_GAME, LABEL_PLACED, SET_STORAGE_BOX } from './types';
 import axios from 'axios';
 
-imageSrc = 'http://existenz.se/img/duck50x50.png';
+img_path = 'http://existenz.se/img/duck50x50.png';
 mockGame = {
 	labels: [
        {'name': 'BMW', 'id': 1},
@@ -10,7 +10,7 @@ mockGame = {
     ],
     image:{
 	    id:1,
-	    imageSrc: imageSrc
+	    img_path: img_path
 	}
 };
 
@@ -20,7 +20,7 @@ export function getNewGameMock(dispatch){
 	}
 }
 
-export function setStorageBox(dispatch){
+export function changeStorageBox(dispatch){
 	return function(storage_box){
 		dispatch({ type: SET_STORAGE_BOX, storage_box:storage_box });
 	}
@@ -35,33 +35,33 @@ export function placeLabel(dispatch){
 export function completedImage(dispatch){
 	return function(user_id, image_id, labels){
 		console.log("completedImage");
-		console.log(user_id);
-		console.log(image_id);
-		console.log(labels);
-		/*
-		axios.post('/label_placement', 
-		{
+
+		var obj = {
 			user_id:user_id,
 			image_id:image_id,
-			labels:[labels]
-		}).then(response => {
-			console.log(response);
+			placed_labels:labels
+		}
+
+		console.log(obj);
+		
+		axios.post('http://131.159.209.197:8000/label_placement/', obj).then(response => {
+			console.log(response.data);
 		}).catch(error => {
 			console.log(error);
 		});
-		*/
+		
 	}
 }
 
 export function getNewGame(dispatch){
 	return function(storage_box){
-		console.log("Getting new game");
+		console.log("Getting new sample into box: " +storage_box);
 		axios({
 			method:'get',
-			url:'http://localhost:8000/training_sample/'
+			url:'http://131.159.209.197:8000/training_sample/'
 		}).then(function(response){
-			console.log(response);
-			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, payload: response.data });
+			console.log(response.data);
+			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, image_id: response.data.id, img_path: response.data.file_path, labels: response.data.data_set.potential_labels });
 		}).catch(function(error){
 			console.log("Error getting new game");
 			console.log(error);

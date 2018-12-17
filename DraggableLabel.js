@@ -37,7 +37,7 @@ class DraggableLabel extends React.Component {
         ]),
         onPanResponderRelease: (e, gesture) => {
           //moveX, moveY is the latest screen coordinates of the recently-moved touch
-          this.props.onDrop(gesture.moveX, gesture.moveY, this.props.id);
+          this.props.onDrop(gesture.moveX, gesture.moveY, this.props.id, this.props.name);
           this.setState({
             isBeingDragged: false
           })
@@ -91,7 +91,7 @@ class DraggableLabel extends React.Component {
             {...this.panResponder.panHandlers}
             style={[panStyle, styles.label, {opacity:this.state.opacity}, this.state.isBeingDragged ? styles.pressed : {}]}
             >
-            {this.props.text}
+            {this.props.name}
           </Animated.Text>
         </View>
       );

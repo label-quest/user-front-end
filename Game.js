@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getNewGame, getNewGameMock, placeLabel, completedImage, setStorageBox } from './reducers/GameActions';
+import { getNewGame, getNewGameMock, placeLabel, completedImage, changeStorageBox } from './reducers/GameActions';
 import DraggableLabel from './DraggableLabel';
 
 class Game extends React.Component {
@@ -16,25 +16,25 @@ class Game extends React.Component {
   componentWillMount(){
 
     this.props.getNewGame(this.props.current_box);
-    this.props.getNewGame((this.props.current_box)%1);
+    this.props.getNewGame((this.props.current_box+1)%2);
   }
 
   imagePress = (e) =>{
     alert(e.nativeEvent.locationX);
   }
 
-  handleLabelDrop(x, y, id){
-    this.props.placeLabel(x, y, id);
+  handleLabelDrop(x, y, id, name){
+    this.props.placeLabel(x, y, id, name);
   }
 
   //Send the user_id, image_id and the placed label positions to the api. 
   //After that, change the current storage box and load a new game into the now unused box
   handleNextImage(){
     const game = this.props.boxes[this.props.current_box];
-    var other_box = this.props.current_box % 1;
-    this.props.completedImage(this.props.user.user_info.id, game.image.id, this.props.placed_labels);
-    this.props.setStorageBox(other_box);
-    this.props.getNewGame(other_box);
+    this.props.completedImage(this.props.user.user_info.id, game.image_id, this.props.placed_labels);
+    //var other_box = (this.props.current_box+1)%2;
+    this.props.changeStorageBox((this.props.current_box+1)%2);
+    this.props.getNewGame(this.props.current_box);
   }
 
   handleSkipImage(){
@@ -43,11 +43,19 @@ class Game extends React.Component {
 
   render() {
     const game = this.props.boxes[this.props.current_box];
+    var box = this.props.current_box;
+    if(game.img_path == undefined){
+      return(<View style={styles.container}>
+        <Text>Ingen bild</Text>
+        </View>
+        )
+    }
     return(
       <View style={styles.container}>
         <View style={styles.mainContainer}>
+          <Text>Current box: {box}</Text>
           <View style={styles.dropZone}>
-            <Image source={{uri:game.image.imageSrc}} style={{maxWidth: '100%',flex: 1}}/>
+            <Image source={{uri:game.img_path}} style={{maxWidth: '100%',flex: 1}}/>
           </View>
           <View style={styles.ballContainer}>
             <View style={styles.row}>
@@ -57,7 +65,7 @@ class Game extends React.Component {
                      key = {item.id}
                      onDrop = {this.handleLabelDrop.bind(this)}
                      id = {item.id}
-                     text = {item.name}/>
+                     name = {item.name}/>
                   )) : <Text>NEXT</Text>
                }
             </View>
@@ -131,7 +139,7 @@ const mapDispatchToProps = dispatch => ({
   getNewGame: getNewGame(dispatch),
   getNewGameMock: getNewGameMock(dispatch),
   completedImage: completedImage(dispatch),
-  setStorageBox: setStorageBox(dispatch)
+  changeStorageBox: changeStorageBox(dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

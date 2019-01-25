@@ -6,6 +6,8 @@ import AppNavigator from './AppNavigator';
 import axios from 'axios';
 import axiosMiddleware from 'redux-axios-middleware';
 
+//import Expo from 'expo';
+
 //TODO: replace with actual URL
 const client = axios.create({
   baseURL: 'localhost:8000',
@@ -15,7 +17,7 @@ const client = axios.create({
 const store = createStore(RootReducer);
 // applyMiddleware(axiosMiddleware(client))
 
-export default class App extends React.Component {
+class App extends React.Component {
   render() {
     return (
       <Provider store={ store }>
@@ -24,3 +26,5 @@ export default class App extends React.Component {
     );
   }
 }
+
+export default App;

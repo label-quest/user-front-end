@@ -47,7 +47,7 @@ export function completedImage(dispatch){
 			image_id:image_id,
 			placed_labels:labels
 		}
-		axios.post('http://131.159.209.197:8000/label_placement/', obj).then(response => {
+		axios.post('http://131.159.211.223:8000/label_placement/', obj).then(response => {
 			console.log(response.data);
 		}).catch(error => {
 			console.log(error);
@@ -61,7 +61,7 @@ export function getNewGame(dispatch){
 		console.log("Getting new sample into box: " +storage_box);
 		axios({
 			method:'get',
-			url:'http://131.159.209.197:8000/training_sample/'
+			url:'http://131.159.211.223:8000/training_sample/'
 		}).then(function(response){
 			console.log(response.data);
 			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, image_id: response.data.id, img_path: response.data.file_path, labels: response.data.data_set.potential_labels });

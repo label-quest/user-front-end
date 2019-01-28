@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 //import {facebookService} from './services/FacebookService'
 
 import { AuthSession } from 'expo';
@@ -31,6 +31,10 @@ class LoginPage extends React.Component {
         />
         <Text style={{ fontSize: 20 }}>{this.state.userInfo.name}</Text>
         <Text>ID: {this.state.userInfo.id}</Text>
+        <Button 
+          title="Play the game"
+          onPress={() => this.props.navigation.navigate('Game')}
+        />
       </View>
     );
   };

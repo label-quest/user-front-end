@@ -9,8 +9,14 @@ class Game extends React.Component {
 
   constructor(props){
     super(props);
+    this.state = {time: 0, labelsPlaced: 0, roundsPlayed: 0};
     this.handleNextImage = this.handleNextImage.bind(this);
     this.handleSkipImage = this.handleSkipImage.bind(this);
+    this.startTimer = this.startTimer.bind(this);
+    this.tick = this.tick.bind(this);
+    this.resetTime = this.resetTime.bind(this);
+    this.incrementLabel = this.incrementLabel.bind(this);
+    this.resetLabel = this.resetLabel.bind(this);
   }
 
   componentWillMount(){
@@ -18,12 +24,26 @@ class Game extends React.Component {
     this.props.getNewGame((this.props.current_box+1)%2);
   }
 
+  componentDidMount(){
+    this.startTimer();
+  }
+
+  startTimer(){
+    setInterval(this.tick, 1000);
+  }
+
+  tick(){ this.setState({time:this.state.time+1}) }
+  resetTime(){ this.setState({time: 0}) }
+  incrementLabel(){ this.setState({labelsPlaced:this.state.labelsPlaced+1}) }
+  resetLabel(){ this.setState({labelsPlaced:0}) }
+
   imagePress = (e) =>{
     alert(e.nativeEvent.locationX);
   }
 
   handleLabelDrop(x, y, id, name){
     this.props.placeLabel(x, y, id, name);
+    this.incrementLabel();
   }
 
   //Send the user_id, image_id and the placed label positions to the api. 
@@ -35,12 +55,14 @@ class Game extends React.Component {
     this.props.changeStorageBox((this.props.current_box+1)%2);
     this.props.getNewGame(this.props.current_box);
     this.props.setResetLabels(true);
+    this.resetTime();
   }
 
   handleSkipImage(){
     console.log("skipping image");
   }
 
+  //generate all the labels for this image
   makeDraggables(labels){
       return(
         labels != undefined ? labels.map((item, index) => (
@@ -64,6 +86,8 @@ class Game extends React.Component {
     }
     return(
       <View style={styles.container}>
+      <Text>Labels: {this.state.labelsPlaced}</Text>
+      <Text>Time: {this.state.time}</Text>
         <View style={styles.mainContainer}>
           <View style={styles.dropZone}>
             <Image source={{uri:game.img_path}} style={{maxWidth: '100%',flex: 1}}/>

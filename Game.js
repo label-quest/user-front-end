@@ -1,22 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getNewGame, getNewGameMock, placeLabel, completedImage, changeStorageBox, setResetLabels } from './reducers/GameActions';
 import DraggableLabel from './DraggableLabel';
 
 class Game extends React.Component {
-
   constructor(props){
     super(props);
-    this.state = {time: 0, labelsPlaced: 0, roundsPlayed: 0};
+    const {height, width} = Dimensions.get('window');
+    this.state = {time: 0, labelsPlaced: 0, roundsPlayed: 0, score: 0, height: height, width: width};
     this.handleNextImage = this.handleNextImage.bind(this);
     this.handleSkipImage = this.handleSkipImage.bind(this);
     this.startTimer = this.startTimer.bind(this);
-    this.tick = this.tick.bind(this);
-    this.resetTime = this.resetTime.bind(this);
-    this.incrementLabel = this.incrementLabel.bind(this);
-    this.resetLabel = this.resetLabel.bind(this);
+    this.incrementTimer = this.incrementTimer.bind(this);
+    this.resetTimer = this.resetTimer.bind(this);
+    this.incrementScore = this.incrementScore.bind(this);
+    this.incrementLabelCount = this.incrementLabelCount.bind(this);
+    this.resetLabelCount = this.resetLabelCount.bind(this);
   }
 
   componentWillMount(){
@@ -29,65 +30,79 @@ class Game extends React.Component {
   }
 
   startTimer(){
-    setInterval(this.tick, 1000);
+    setInterval(this.incrementTimer, 1000);
   }
 
-  tick(){ this.setState({time:this.state.time+1}) }
-  resetTime(){ this.setState({time: 0}) }
-  incrementLabel(){ this.setState({labelsPlaced:this.state.labelsPlaced+1}) }
-  resetLabel(){ this.setState({labelsPlaced:0}) }
+  incrementTimer(){ this.setState({time:this.state.time+1}) }
+  resetTimer(){ this.setState({time: 0}) }
+  incrementScore(score){ this.setState({score:this.state.score+score}) }
+  incrementLabelCount(count){ this.setState({labelsPlaced:this.state.labelsPlaced+count}) }
+  resetLabelCount(){ this.setState({labelsPlaced:0}) }
 
-  imagePress = (e) =>{
-    alert(e.nativeEvent.locationX);
-  }
+  imagePress = (e) =>{ alert(e.nativeEvent.locationX); }
 
   handleLabelDrop(x, y, id, name){
-    this.props.placeLabel(x, y, id, name);
-    this.incrementLabel();
+    perc_x = x/this.state.width;
+    perc_y = y/this.state.height;
+    this.props.placeLabel(perc_x, perc_y, id, name);
   }
 
   //Send the user_id, image_id and the placed label positions to the api. 
   //After that, change the current storage box and load a new game into the now unused box
   handleNextImage(){
     const game = this.props.boxes[this.props.current_box];
-    this.props.completedImage(this.props.user.user_info.id, game.image_id, this.props.placed_labels);
-    //var other_box = (this.props.current_box+1)%2;
+    labels = this.props.placed_labels;
+    this.props.completedImage(this.props.user.user_info.id, game.image_id, labels);
+    this.incrementLabelCount(labels.length);
+    
+    var accuracy = 0;
+    var score = 0;
+    for(var i = 0; i<labels.length; i++){
+      accuracy = (labels[i].x + labels[i].y)*100;
+      labelScore = Math.round(accuracy-this.state.time*5);
+      if(labelScore<0) labelScore = 0;
+      this.incrementScore(labelScore);
+    }
+    
     this.props.changeStorageBox((this.props.current_box+1)%2);
     this.props.getNewGame(this.props.current_box);
     this.props.setResetLabels(true);
-    this.resetTime();
+    this.resetTimer();
   }
 
   handleSkipImage(){
-    console.log("skipping image");
+    this.props.changeStorageBox((this.props.current_box+1)%2);
+    this.props.getNewGame(this.props.current_box);
+    this.props.setResetLabels(true);
+    this.resetTimer();
   }
 
   //generate all the labels for this image
   makeDraggables(labels){
-      return(
-        labels != undefined ? labels.map((item, index) => (
-           <DraggableLabel
-           key = {index}
-           onDrop = {this.handleLabelDrop.bind(this)}
-           id = {item.id}
-           name = {item.name}/>
-        )) : <Text>NEXT</Text>
-      )
+    return(
+      labels != undefined ? labels.map((item, index) => (
+         <DraggableLabel
+         key = {index}
+         onDrop = {this.handleLabelDrop.bind(this)}
+         id = {item.id}
+         name = {item.name}/>
+      )) : <Text>NEXT</Text>
+    )
   }
 
   render() {
     var game = this.props.boxes[this.props.current_box];
     var box = this.props.current_box;
     if(game.img_path == undefined){
-      return(<View style={styles.container}>
-        <Text>Ingen bild</Text>
+      return(
+        <View style={styles.container}>
+          <Text>Ingen bild</Text>
         </View>
-        )
+      )
     }
     return(
       <View style={styles.container}>
-      <Text>Labels: {this.state.labelsPlaced}</Text>
-      <Text>Time: {this.state.time}</Text>
+      <Text>Labels: {this.state.labelsPlaced}, Time: {this.state.time}, Score: {this.state.score}</Text>
         <View style={styles.mainContainer}>
           <View style={styles.dropZone}>
             <Image source={{uri:game.img_path}} style={{maxWidth: '100%',flex: 1}}/>
@@ -121,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   ballContainer: {
-    height:100
+    height: 100
   },
   buttonContainer:{
     height: 100

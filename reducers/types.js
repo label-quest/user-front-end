@@ -1,6 +1,6 @@
 export const ADD_FRIEND = 'ADD_FRIEND'
 export const NEW_GAME = 'NEW_GAME'
 export const LABEL_PLACED = 'LABEL_PLACED'
-export const GET_USER = 'GET_USER'
+export const SET_USER = 'SET_USER'
 export const SET_STORAGE_BOX = 'SET_STORAGE_BOX'
 export const SET_RESET_LABEL = 'SET_RESET_LABEL'

@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 //import {facebookService} from './services/FacebookService'
 
+import { setUser } from './reducers/UserActions';
+
+
 import { AuthSession } from 'expo';
 
 const FB_APP_ID = '1175074915977936';
@@ -63,7 +66,7 @@ class LoginPage extends React.Component {
     });
 
     if (result.type !== 'success') {
-      alert('Uh oh, something went wrong');
+      alert('Something went wrong');
       return;
     }
 
@@ -73,6 +76,7 @@ class LoginPage extends React.Component {
     );
     const userInfo = await userInfoResponse.json();
     this.setState({ userInfo });
+    this.props.setUser(userInfo.id, userInfo.name);
   };
 
 }
@@ -93,4 +97,8 @@ const mapStateToProps = state => ({
   user: state.user,
 });
 
-export default connect(mapStateToProps)(LoginPage);
+const mapDispatchToProps = dispatch => ({
+  setUser: setUser(dispatch)
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

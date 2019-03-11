@@ -66,10 +66,7 @@ class DraggableLabel extends React.Component {
   }
 
   componentDidUpdate(){
-    console.log("UPDATE");
-    console.log(this.props.reset_labels);
     if(this.props.reset_labels){
-      console.log("Restting lavel");
       this.resetLabel();
     }
   }

@@ -28,8 +28,6 @@ export function changeStorageBox(dispatch){
 
 export function setResetLabels(dispatch){
 	return function(reset){
-		console.log("RESETTING LABEL ACTION");
-
 		dispatch({ type: SET_RESET_LABEL, reset:reset });
 	}
 }
@@ -47,8 +45,9 @@ export function completedImage(dispatch){
 			image_id:image_id,
 			placed_labels:labels
 		}
-		axios.post('http://131.159.209.197:8000/label_placement/', obj).then(response => {
-			console.log(response.data);
+		console.log("Sending image labeling");
+		console.log(obj);
+		axios.post('http://192.168.10.144:8000/label_placement/', obj).then(response => {
 		}).catch(error => {
 			console.log(error);
 		});
@@ -61,9 +60,8 @@ export function getNewGame(dispatch){
 		console.log("Getting new sample into box: " +storage_box);
 		axios({
 			method:'get',
-			url:'http://131.159.209.197:8000/training_sample/'
+			url:'http://192.168.10.144:8000/training_sample/'
 		}).then(function(response){
-			console.log(response.data);
 			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, image_id: response.data.id, img_path: response.data.file_path, labels: response.data.data_set.potential_labels });
 		}).catch(function(error){
 			console.log("Error getting new game");

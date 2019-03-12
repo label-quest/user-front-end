@@ -1,6 +1,5 @@
 import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import Home from './Home';
-import Friends from './Friends';
 import Game from './Game';
 import LoginPage from './LoginPage';
 
@@ -16,7 +15,6 @@ const LoginNavigator = createStackNavigator({
 
 const MainNavigator = createStackNavigator({
   Home: { screen: Home },
-  Friends: { screen: Friends },
   Game: { screen: Game }
 });
 

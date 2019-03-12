@@ -9,11 +9,11 @@ class Game extends React.Component {
   constructor(props){
     super(props);
     const {height, width} = Dimensions.get('window');
-    this.state = {time: 0, labelsPlaced: 0, roundsPlayed: 0, score: 0, height: height, width: width};
+    this.state = {time: 10, labelsPlaced: 0, roundsPlayed: 0, score: 0, height: height, width: width};
     this.handleNextImage = this.handleNextImage.bind(this);
     this.handleSkipImage = this.handleSkipImage.bind(this);
     this.startTimer = this.startTimer.bind(this);
-    this.incrementTimer = this.incrementTimer.bind(this);
+    this.decrementTimer = this.decrementTimer.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
     this.incrementScore = this.incrementScore.bind(this);
     this.incrementLabelCount = this.incrementLabelCount.bind(this);
@@ -30,11 +30,18 @@ class Game extends React.Component {
   }
 
   startTimer(){
-    setInterval(this.incrementTimer, 1000);
+    setInterval(this.decrementTimer, 1000);
   }
 
-  incrementTimer(){ this.setState({time:this.state.time+1}) }
-  resetTimer(){ this.setState({time: 0}) }
+  decrementTimer(){ 
+    this.setState({time:this.state.time-1})
+    if(this.state.time == 0){
+      this.handleSkipImage();
+      this.resetTimer();
+    }
+
+  }
+  resetTimer(){ this.setState({time: 10}) }
   incrementScore(score){ this.setState({score:this.state.score+score}) }
   incrementLabelCount(count){ this.setState({labelsPlaced:this.state.labelsPlaced+count}) }
   resetLabelCount(){ this.setState({labelsPlaced:0}) }

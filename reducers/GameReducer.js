@@ -6,16 +6,16 @@ const INITIAL_STATE = {
     image_id:1, 
     img_path:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg',
     labels:[
-      {'name': 'BMW', 'id': 1},
-      {'name': 'SAAB', 'id': 2},
-      {'name': '240 snus it', 'id': 3}]
+       {'name': 'Box', 'id': 1},
+       {'name': 'Duckling', 'id': 2},
+       {'name': 'Car', 'id': 3}]
   },{
     image_id:2, 
     img_path:'https://5.imimg.com/data5/CK/AS/MY-60212530/9-ply-duplex-box-500x500.jpg',
     labels:[
-      {'name': 'BMW2', 'id': 7},
-      {'name': 'SAAB2', 'id': 8},
-      {'name': '240 snus 222it', 'id': 11}    
+       {'name': 'Box', 'id': 1},
+       {'name': 'Duckling', 'id': 2},
+       {'name': 'Car', 'id': 3}   
     ]
   }],
   placed_labels: [],
@@ -37,8 +37,6 @@ export function gameReducer(state = INITIAL_STATE, action){
         reset_labels: action.reset
       }   
     case NEW_GAME:
-      console.log("NEW GAME");
-      console.log(action);
       var labels = action.labels;
       shuffle(labels);
     	return{

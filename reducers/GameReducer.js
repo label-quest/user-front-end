@@ -37,6 +37,8 @@ export function gameReducer(state = INITIAL_STATE, action){
         reset_labels: action.reset
       }   
     case NEW_GAME:
+      console.log("NEW GAME");
+      console.log(action);
       var labels = action.labels;
       shuffle(labels);
     	return{

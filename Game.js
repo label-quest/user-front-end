@@ -102,7 +102,7 @@ class Game extends React.Component {
     }
     return(
       <View style={styles.container}>
-      <Text>Labels: {this.state.labelsPlaced}, Time: {this.state.time}, Score: {this.state.score}</Text>
+      <Text style={styles.textZone}>Labels placed: {this.state.labelsPlaced}, Time: {this.state.time}, Score: {this.state.score}</Text>
         <View style={styles.mainContainer}>
           <View style={styles.dropZone}>
             <Image source={{uri:game.img_path}} style={{maxWidth: '100%',flex: 1}}/>
@@ -147,6 +147,10 @@ const styles = StyleSheet.create({
   },
   elementsContainer: {
     backgroundColor: '#ecf5fd',
+  },
+  textZone: {
+    textAlign: "center",
+    fontSize: 18,
   },
   text: {
     marginTop: 25,

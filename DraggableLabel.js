@@ -88,7 +88,7 @@ class DraggableLabel extends React.Component {
   }
 
   isDropArea(gesture) {
-    return gesture.moveY < 400;
+    return gesture.moveY < 500;
   }
 
   render() {

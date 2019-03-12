@@ -8,7 +8,7 @@ import axiosMiddleware from 'redux-axios-middleware';
 
 //TODO: replace with actual URL
 const client = axios.create({
-	baseURL: 'localhost:8000',
+	baseURL: 'localhost:3000',
 	responseType: 'json'
 });
 

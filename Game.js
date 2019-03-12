@@ -24,8 +24,8 @@ class Game extends React.Component {
   }
 
   componentWillMount(){
-    this.props.getNewGame(this.props.current_box);
-    this.props.getNewGame((this.props.current_box+1)%2);
+    this.props.getNewGame(this.props.current_box, this.props.user.user_info.id);
+    this.props.getNewGame((this.props.current_box+1)%2, this.props.user.user_info.id);
   }
 
   componentDidMount(){
@@ -101,7 +101,7 @@ class Game extends React.Component {
 
   handleNewGameEvent(){
     this.props.changeStorageBox((this.props.current_box+1)%2);
-    this.props.getNewGame(this.props.current_box);
+    this.props.getNewGame(this.props.current_box, this.props.user.user_info.id);
     this.props.setResetLabels(true);
     this.resetTimer();
   }

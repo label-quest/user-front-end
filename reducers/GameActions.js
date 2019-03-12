@@ -56,11 +56,14 @@ export function completedImage(dispatch){
 }
 
 export function getNewGame(dispatch){
-	return function(storage_box){
+	return function(storage_box, user_id){
 		//console.log("Getting new sample into box: " +storage_box);
 		axios({
 			method:'get',
-			url:'http://192.168.10.144:3000/training_sample/'
+			url:'http://192.168.10.144:3000/training_sample/',
+			params: {
+				user_id:user_id
+			}
 		}).then(function(response){
 			//console.log(response.data);
 			if(response.status === 200) dispatch({ type: NEW_GAME, storage_box:storage_box, image_id: response.data.id, img_path: response.data.imageSrc, labels: response.data.labels });
